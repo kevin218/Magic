@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Astraeus'
-copyright = '2022, Kevin B. Stevenson'
+project = 'MEOW'
+copyright = '2024, Kevin B. Stevenson'
 author = 'Kevin B. Stevenson'
 
 
