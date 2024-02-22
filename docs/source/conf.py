@@ -32,7 +32,7 @@ author = 'Kevin B. Stevenson'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_rtd_theme', 'sphinx.ext.todo', 'sphinx.ext.viewcode',
+extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode',
               'sphinx.ext.autodoc', 'numpydoc', 'nbsphinx', 'myst_parser',
               'sphinx.ext.autosectionlabel', 'sphinx.ext.napoleon']
 
