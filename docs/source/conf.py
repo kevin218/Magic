@@ -19,8 +19,6 @@ sys.path.insert(0, os.path.abspath('../../src/'))
 
 # from meow import __version__
 
-import sphinx_rtd_theme
-
 # -- Project information -----------------------------------------------------
 
 project = 'MEOW'
