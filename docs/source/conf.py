@@ -33,8 +33,9 @@ author = 'Kevin B. Stevenson'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode',
-              'sphinx.ext.autodoc', 'numpydoc', 'nbsphinx', 'myst_parser',
+              'sphinx.ext.autodoc', 'nbsphinx', 'myst_parser',
               'sphinx.ext.autosectionlabel', 'sphinx.ext.napoleon']
+# 'sphinx_rtd_theme', 'numpydoc', 
 
 master_doc = 'index'
 # Add any paths that contain templates here, relative to this directory.
@@ -69,4 +70,4 @@ html_static_path = []
 suppress_warnings = ['autosectionlabel.*']
 
 # Remove stub file not found warnings
-numpydoc_class_members_toctree = False
+# numpydoc_class_members_toctree = False
