@@ -2,6 +2,6 @@ furo==2021.11.16
 myst-parser
 nbsphinx
 numpydoc
-sphinx
+sphinx>=5.0
 sphinx-automodapi
 sphinx-rtd-theme
