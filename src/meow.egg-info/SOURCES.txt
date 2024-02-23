@@ -1,9 +1,0 @@
-README.md
-setup.cfg
-setup.py
-src/meow.egg-info/PKG-INFO
-src/meow.egg-info/SOURCES.txt
-src/meow.egg-info/dependency_links.txt
-src/meow.egg-info/requires.txt
-src/meow.egg-info/top_level.txt
-src/meow.egg-info/zip-safe
