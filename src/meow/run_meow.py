@@ -1,14 +1,51 @@
 
-
-import meow_ql as ql
+import os
+import glob
+from meow import S2_sky, S3_image, util
+from meow import meow_ql as ql
 from importlib import reload
 reload(ql)
 
-data_dir = '/Users/stevekb1/Documents/data/JWST/WD'
-analysis_dir = '/Users/stevekb1/Documents/Analyses/JWST/WD'
-apcorr_file = f'{analysis_dir}/aperture_correction_tab3.csv'
+
+mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
+jwst_dir = '/Users/stevekb1/Documents/data/JWST/WD/JWST-S2'
+meow_dir = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-S2'
+filetype = '_cal.fits'
+
+# Move downloaded files from MAST dir to data dir
+files = util.sortMAST(mast_dir, jwst_dir, filetype)
+
+# Collect list of files ending in filetype
+files = glob.glob(f'{jwst_dir}/**/*{filetype}', recursive=True)
 
 target_name = 'CPD-69-177'
+filter = 'F770W'
+filter = 'F1800W'
+
+for filename in files:
+    
+    inputdir = os.path.join(jwst_dir, target_name, filter)
+    outputdir_S2 = os.path.join(meow_dir, target_name, filter)
+    S2_sky.call(inputdir, outputdir_S2, target_name, filter)
+
+
+
+
+
+reload(S2_sky)
+
+
+
+outputdir_S3 = f'{data_dir}/{target_name}/MEOW-S3/{filter}/'
+reload(S3_image)
+S3_image.call(outputdir_S2, outputdir_S3, target_name, filter)
+
+
+
+analysis_dir = '/Users/stevekb1/Documents/Analyses/JWST/WD'
+apcorr_file = os.path.join(analysis_dir,'aperture_correction_tab3.csv')
+
+
 dirname = f'{data_dir}/{target_name}/JWST-S3/'
 model_file = f'{analysis_dir}/{target_name}/0310-688.txt'
 save_file = f'{analysis_dir}/{target_name}/{target_name}_Flux.png'
