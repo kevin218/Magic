@@ -2,5 +2,6 @@
 docs/.DS_Store
 src/.DS_Store
 src/meow/__pycache__/*
-src/meow.egg-info/PKG-INFO
-STScI_Demos/Pipeline_demo_subtract_imager_background.ipynb
+src/meow.egg-info/*
+STScI_Demos/*
+docs/.DS_Store
