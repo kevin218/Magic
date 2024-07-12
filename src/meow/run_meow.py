@@ -10,23 +10,22 @@ reload(ql)
 mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
 jwst_dir = '/Users/stevekb1/Documents/data/JWST/WD/JWST-S2'
 meow_dir = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-S2'
-filetype = '_cal.fits'
+filetype = '*_cal.fits'
 
 # Move downloaded files from MAST dir to data dir
-files = util.sortMAST(mast_dir, jwst_dir, filetype)
+# files = util.sortMAST(mast_dir, jwst_dir, filetype)
 
-# Collect list of files ending in filetype
-files = glob.glob(f'{jwst_dir}/**/*{filetype}', recursive=True)
+# Get unique list of target names and filters
+target_list, filter_list = util.getTargetInfo(jwst_dir, filetype)
 
-target_name = 'CPD-69-177'
-filter = 'F770W'
-filter = 'F1800W'
-
-for filename in files:
-    
-    inputdir = os.path.join(jwst_dir, target_name, filter)
-    outputdir_S2 = os.path.join(meow_dir, target_name, filter)
-    S2_sky.call(inputdir, outputdir_S2, target_name, filter)
+# Run MEOW-S2 on all targets and filters
+for target_name in target_list:
+    for filter in filter_list:
+        inputdir = os.path.join(jwst_dir, target_name, filter)
+        outputdir_S2 = os.path.join(meow_dir, target_name, filter)
+        if os.path.exists(inputdir):
+            print(target_name, filter)
+            S2_sky.call(inputdir, outputdir_S2, target_name, filter)
 
 
 

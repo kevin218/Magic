@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import glob
+import glob, os
 import sort_nicely as sn
 
 # import jwst pipeline modules
@@ -17,7 +17,8 @@ from astropy.io import fits
 # import MEOW modules
 from meow.util import makedirectory
 
-def call(inputdir, outputdir, target_name, filter, **kwargs):
+def call(inputdir, outputdir, target_name, filter, 
+         filetype='*_cal.fits', **kwargs):
     """Subtract sky background from CAL FITS files
 
     Parameters
@@ -38,10 +39,12 @@ def call(inputdir, outputdir, target_name, filter, **kwargs):
     skyflat_mean, skyflat_std = make_sky(inputdir, outputdir, **kwargs)
 
     # Look at cal image before and after sky subtraction
-    miri_cal_files = sn.sort_nicely(glob.glob(f'{inputdir}*_cal.fits'))
+    miri_cal_files = sn.sort_nicely(glob.glob(os.path.join(inputdir, filetype)))
     im1 = ImageModel(miri_cal_files[0])
     vmax1 = np.nanmedian(im1.data)+3*np.nanstd(im1.data)
-    miri_skysub_files = sn.sort_nicely(glob.glob(f'{outputdir}*_skysub_cal.fits'))
+    miri_skysub_files = sn.sort_nicely(glob.glob(
+                                       os.path.join(outputdir, 
+                                                    '*_skysub_cal.fits')))
     im2 = ImageModel(miri_skysub_files[0])
     vmax2 = np.nanmedian(im2.data)+3*np.nanstd(im2.data)
     plt.figure(251, figsize=(14,6))
@@ -59,7 +62,7 @@ def call(inputdir, outputdir, target_name, filter, **kwargs):
     plt.xlabel("Pixel Column")
     plt.colorbar()
     plt.savefig(f"{outputdir}/figs/Fig251_{target_name}_{filter}_BeforeAfter.png")
-    plt.show()
+    # plt.show()
 
     # Look at the created median sky image and write to a file
     drange_cal = [0., vmax1]
@@ -68,7 +71,7 @@ def call(inputdir, outputdir, target_name, filter, **kwargs):
     savename = (f"{outputdir}/figs/Fig252_{target_name}_{filter}_MedianSky.png")
     show_image(skyflat_mean, drange_cal[0], drange_cal[1], dmap=dmap, 
                title=title, savename=savename)
-    fits.writeto(f'{outputdir}{filter}_sky.fits', skyflat_mean, overwrite=True)
+    fits.writeto(f'{outputdir}/{filter}_sky.fits', skyflat_mean, overwrite=True)
 
     return
 
@@ -79,7 +82,8 @@ def make_sky(
     scalebkg=True,
     exclude_above=None,
     exclude_delta=None,
-    ds9regions=None):
+    ds9regions=None,
+    filetype='*_cal.fits'):
     """
     Make sky background by sigma clipping in image coordinates and subtract it
     from all the input files.
@@ -102,7 +106,10 @@ def make_sky(
         Exclude pixels inside ds9 regions from sky creation
     """
 
-    files = glob.glob(f'{inputdir}*_cal.fits')
+    files = glob.glob(os.path.join(inputdir, filetype))
+    if len(files) == 0:
+        print("No files found.")
+        return None, None
     # if ds9regions is not None:
     #     ereg = Regions.read(ds9regions, format="ds9")
         # for creg in ereg:

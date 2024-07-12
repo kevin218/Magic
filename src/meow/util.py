@@ -3,6 +3,7 @@ import os
 import glob
 import shutil
 import astropy.io.fits as pf
+from sort_nicely import sort_nicely as sn
 
 def makedirectory(outputdir):
     """Creates a directory for the current stage.
@@ -27,14 +28,14 @@ def makedirectory(outputdir):
     return
 
 
-def sortMAST(mast_dir, data_dir, filetype='_cal.fits'):
+def sortMAST(mast_dir, jwst_dir, filetype='*_cal.fits'):
     """Sort files downloaded from MAST
     
     Parameters
     ----------
     mast_dir : str
         Input directory where FITS files are currently located
-    data_dir : str
+    jwst_dir : str
         Base directory where FITS files are moved
 
     Returns
@@ -44,7 +45,7 @@ def sortMAST(mast_dir, data_dir, filetype='_cal.fits'):
     """
 
     # Collect list of files ending in filetype
-    files = glob.glob(f'{mast_dir}/**/*{filetype}', recursive=True)
+    files = glob.glob(f'{mast_dir}/**/{filetype}', recursive=True)
 
     # Move files
     target_files = []
@@ -52,9 +53,36 @@ def sortMAST(mast_dir, data_dir, filetype='_cal.fits'):
         hdr = pf.getheader(filename)
         target_name = hdr['TARGPROP']
         filter = hdr['FILTER']
-        target_dir = os.path.join(data_dir, target_name, filter)
+        target_dir = os.path.join(jwst_dir, target_name, filter)
         # Create directory
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
         target_files.append(shutil.move(filename, target_dir))
     return target_files
+
+
+def getTargetInfo(jwst_dir, filetype='*_cal.fits'):
+    """Get unique set of target names and filters
+
+    Parameters
+    ----------
+    jwst_dir : str
+        Base directory where FITS files are located
+    """
+    # Collect list of files ending in filetype
+    files = glob.glob(f'{jwst_dir}/**/{filetype}', recursive=True)
+
+    # Create list of all targets and filters
+    target_name = []
+    filter = []
+    for filename in files:
+        hdr = pf.getheader(filename)
+        target_name.append(hdr['TARGPROP'])
+        filter.append(hdr['FILTER'])
+    
+    # Build unique set of targets and filters
+    target_list = set(target_name)
+    filter_list = set(filter)
+
+    # Return sorted lists
+    return sn(sorted(target_list)), sn(sorted(filter_list))     
