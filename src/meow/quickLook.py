@@ -19,7 +19,7 @@ def read_tables(dirname):
     Parameters
     ----------
     dirname : str
-        Directory path to ECSV files.
+        Directory or root path to ECSV files. Search is recursive.
 
     Returns
     -------
@@ -28,7 +28,7 @@ def read_tables(dirname):
     '''
     # Look for ECSV files in the given directory
     file_list = []
-    for fname in glob.glob(dirname+'*_cat.ecsv'):
+    for fname in glob.glob(dirname+'/**/*_cat.ecsv', recursive=True):
         file_list.append(fname)
     file_list = sort_nicely(file_list)
 
@@ -57,7 +57,7 @@ def read_fits(dirname, tables, apcorr_file):
     '''
     # Look for ECSV files in the given directory
     file_list = []
-    for fname in glob.glob(dirname+'*_i2d.fits'):
+    for fname in glob.glob(dirname+'/**/*_skysub_i2d.fits', recursive=True):
         file_list.append(fname)
     file_list = sort_nicely(file_list)
 
@@ -85,7 +85,7 @@ def get_wd_flux(data, table, apcorr_file):
     Parameters
     ----------
     data : Xarray Dataset
-        The Dataset object in which the fits data will stored.
+        The Dataset object in which the fits data are stored.
     table: ECSV table
         The catalog of targets from JWST Stage 3.
 
@@ -106,6 +106,8 @@ def get_wd_flux(data, table, apcorr_file):
                        (table['sky_centroid'].dec - dec)**2)
     # Determine index of nearest object to expected target position
     itarget = np.argsort(distance)[0]
+    data['distance'] = distance[itarget].to(u.arcsec).value
+    print(f"Distance from expected target position: {data['distance'].values} arcsec in {data['filter'].values}")
 
     # Determine aperture correction factors for filter/subarray combination
     apcorr30, apcorr50, apcorr70 = get_aper_corr(apcorr_file, data['filter'], data['subarray'])
@@ -141,7 +143,7 @@ def plot_wd_flux(data, model_file, save_file, title=None):
     Parameters
     ----------
     data : Xarray Dataset
-        The Dataset object in which the fits data will stored.
+        The Dataset object in which the fits data are stored.
     '''
     # Load model file
     model_wave, model_flux = np.genfromtxt(model_file, unpack=True)
@@ -154,8 +156,10 @@ def plot_wd_flux(data, model_file, save_file, title=None):
         iwave[ii] = np.argwhere(model_wave > wave.values)[0]
     
     # Normalize measured flux by model
-    flux = np.array([data.aper30_flux, data.aper50_flux, data.aper70_flux])
-    flux_err = np.array([data.aper30_flux_err, data.aper50_flux_err, data.aper70_flux_err])
+    flux = np.array([data.aper30_flux, data.aper50_flux, 
+                     data.aper70_flux, data.aper100_flux])
+    flux_err = np.array([data.aper30_flux_err, data.aper50_flux_err, 
+                         data.aper70_flux_err, data.aper100_flux_err])
     norm_flux = flux/model_flux[np.newaxis,iwave]
     norm_flux_err = flux_err/model_flux[np.newaxis,iwave]
 
@@ -174,6 +178,8 @@ def plot_wd_flux(data, model_file, save_file, title=None):
                  color=colors[2], ms=4, zorder=3, label='Aperature 50 Flux')
     plt.errorbar(data.wavelength, data.aper70_flux, data.aper70_flux_err, fmt='o', 
                  color=colors[3], ms=4, zorder=3, label='Aperature 70 Flux')
+    plt.errorbar(data.wavelength, data.aper100_flux, data.aper100_flux_err, fmt='o', 
+                 color=colors[4], ms=4, zorder=3, label='Aperature Total Flux')
     plt.plot(model_wave, model_flux, '-', color=colors[1], 
              zorder=1, label='Model')
     plt.legend(loc='upper right')
@@ -188,6 +194,8 @@ def plot_wd_flux(data, model_file, save_file, title=None):
                  color=colors[2], ms=4, zorder=3, label='Aperature 50 Flux')
     plt.errorbar(data.wavelength, planet_flux[2], planet_flux_err[2], fmt='o', 
                  color=colors[3], ms=4, zorder=3, label='Aperature 70 Flux')
+    plt.errorbar(data.wavelength, planet_flux[3], planet_flux_err[3], fmt='o', 
+                 color=colors[4], ms=4, zorder=3, label='Aperature Total Flux')
     plt.hlines(0, 5, 25, ls='solid', color=colors[1])
     plt.hlines([-3, 3], 5, 25, ls='dotted', color=colors[1], 
                label='3% Abs. Flux Unc.', alpha=0.5)
