@@ -21,7 +21,7 @@ sphinx-automodapi
 sphinx-rtd-theme
 
 [jwst]
-jwst>=1.12.4
+jwst>=1.14.4
 stcal>=1.0.0
 
 [test]

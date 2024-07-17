@@ -11,7 +11,7 @@ Project-URL: Source Code, https://github.com/kevin218/MEOW
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.8
+Requires-Python: >=3.11
 Description-Content-Type: text/markdown
 Requires-Dist: astraeus@ git+https://github.com/kevin218/Astraeus@main
 Requires-Dist: astropy
@@ -27,7 +27,7 @@ Requires-Dist: stdatamodels
 Requires-Dist: svo_filters
 Requires-Dist: tqdm
 Provides-Extra: jwst
-Requires-Dist: jwst>=1.12.4; extra == "jwst"
+Requires-Dist: jwst>=1.14.4; extra == "jwst"
 Requires-Dist: stcal>=1.0.0; extra == "jwst"
 Provides-Extra: docs
 Requires-Dist: myst-parser; extra == "docs"
