@@ -29,7 +29,7 @@ new environment by doing:
 
 .. code-block:: bash
 
-    conda create -n meow python==3.9.7
+    conda create -n meow python==3.11
     conda activate meow
 
 Once in your new conda environment, you can install ``MEOW`` directly from source on
