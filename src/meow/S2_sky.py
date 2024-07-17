@@ -16,6 +16,7 @@ from astropy.io import fits
 
 # import MEOW modules
 from meow.util import makedirectory
+from meow.plots import before_after, show_image
 
 def call(inputdir, outputdir, target_name, filter, 
          filetype='*_cal.fits', **kwargs):
@@ -47,22 +48,11 @@ def call(inputdir, outputdir, target_name, filter,
                                                     '*_skysub_cal.fits')))
     im2 = ImageModel(miri_skysub_files[0])
     vmax2 = np.nanmedian(im2.data)+3*np.nanstd(im2.data)
-    plt.figure(251, figsize=(14,6))
-    plt.clf()
-    plt.subplot(121)
-    plt.title(f"Original Image - {target_name} - {filter}")
-    plt.imshow(im1.data, cmap='Greys', origin='lower', vmin=0, vmax=vmax1)
-    plt.ylabel("Pixel Row")
-    plt.xlabel("Pixel Column")
-    plt.colorbar()
-    plt.subplot(122)
-    plt.title(f"Sky-Subtracted Image - {target_name} - {filter}")    
-    plt.imshow(im2.data, cmap='Greys', origin='lower', vmin=0, vmax=vmax2)
-    plt.ylabel("Pixel Row")
-    plt.xlabel("Pixel Column")
-    plt.colorbar()
-    plt.savefig(f"{outputdir}/figs/Fig251_{target_name}_{filter}_BeforeAfter.png")
-    # plt.show()
+    title1 = f"Original Image - {target_name} - {filter}"
+    title2 = f"Sky-Subtracted Image - {target_name} - {filter}"
+    savename = f"{outputdir}/figs/Fig251_{target_name}_{filter}_BeforeAfter.png"
+    before_after(im1.data, im2.data, vmax1, vmax2, title1, title2, 
+                 savename=savename)
 
     # Look at the created median sky image and write to a file
     drange_cal = [0., vmax1]
@@ -195,44 +185,3 @@ def make_sky(
 
     return skyflat_mean, skyflat_std
 
-
-# Helper script to plot images
-def show_image(
-    data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None, 
-    dmap="binary", savename=None):
-    """Function to generate a 2D, log-scaled image of the data,
-    with an option to highlight a specific pixel (with a red dot).
-
-    Parameters
-    ----------
-    data_2d : numpy.ndarray
-        Image to be displayed
-    vmin : float
-        Minimum signal value to use for scaling
-    vmax : float
-        Maximum signal value to use for scaling
-    xpixel : int
-        X-coordinate of pixel to highlight
-    ypixel : int
-        Y-coordinate of pixel to highlight
-    title : str
-        String to use for the plot title
-    savename : str
-        Full path and name used for saving image
-    """
-    norm = ImageNormalize(data_2d, 
-                          interval=ManualInterval(vmin=vmin, vmax=vmax), 
-                          stretch=SqrtStretch())
-    
-    plt.figure(252, figsize=(7.1, 6))
-    plt.clf()
-    if title:
-        plt.title(title)
-    plt.imshow(data_2d, origin="lower", norm=norm, cmap=plt.get_cmap(dmap))
-    if xpixel and ypixel:
-        plt.plot(xpixel, ypixel, marker="o", color="red", label="Selected Pixel")
-    plt.colorbar(label="DN")
-    plt.xlabel("Pixel Column")
-    plt.ylabel("Pixel Row")
-    if savename:
-        plt.savefig(savename)
