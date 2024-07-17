@@ -7,7 +7,9 @@ Documentation for MEOW
    :maxdepth: 2
    :caption: Contents:
 
-`MEOW` is a general-purpose tool that ...
+``MEOW`` is a general-purpose tool that subtracts the sky background from dithered MIRI images that contain only point sources.
+This tool should be run on ``jwst`` Stage 2 data products, followed by the provided wrapper for ``jwst`` Stage 3.
+The only file that needs to be modified and then executed is ``run_meow.py``.
 
 
 Indices and Searching
