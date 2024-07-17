@@ -1,49 +1,48 @@
 
 import os
-import glob
 from meow import S2_sky, S3_image, util
-from meow import meow_ql as ql
-from importlib import reload
-reload(ql)
+# from meow import meow_ql as ql
+# from importlib import reload
+# reload(S3_image)
 
 
 mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
 jwst_dir = '/Users/stevekb1/Documents/data/JWST/WD/JWST-S2'
-meow_dir = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-S2'
+meow_dir = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-2024-07'
 filetype = '*_cal.fits'
 
-# Move downloaded files from MAST dir to data dir
+# Move downloaded files from MAST dir to JWST dir
 # files = util.sortMAST(mast_dir, jwst_dir, filetype)
 
 # Get unique list of target names and filters
 target_list, filter_list = util.getTargetInfo(jwst_dir, filetype)
 
-# Run MEOW-S2 on all targets and filters
+# Run MEOW Stage 2 on all targets and filters
 for target_name in target_list:
     for filter in filter_list:
         inputdir = os.path.join(jwst_dir, target_name, filter)
         outputdir_S2 = os.path.join(meow_dir, target_name, filter)
         if os.path.exists(inputdir):
-            print(target_name, filter)
+            print(f"Processing target {target_name}, filter {filter}")
             S2_sky.call(inputdir, outputdir_S2, target_name, filter)
 
+# Run MEOW Stage 3 (JWST Stage 3 wrapper) on all targets and filters
+for target_name in target_list:
+    for filter in filter_list:
+        outputdir_S3 = os.path.join(meow_dir, target_name, filter)
+        if os.path.exists(outputdir_S3):
+            print(f"Processing target {target_name}, filter {filter}")
+            S3_image.call(outputdir_S3, target_name, filter)
 
 
 
 
-reload(S2_sky)
 
 
 
-outputdir_S3 = f'{data_dir}/{target_name}/MEOW-S3/{filter}/'
-reload(S3_image)
-S3_image.call(outputdir_S2, outputdir_S3, target_name, filter)
-
-
-
+"""
 analysis_dir = '/Users/stevekb1/Documents/Analyses/JWST/WD'
 apcorr_file = os.path.join(analysis_dir,'aperture_correction_tab3.csv')
-
 
 dirname = f'{data_dir}/{target_name}/JWST-S3/'
 model_file = f'{analysis_dir}/{target_name}/0310-688.txt'
@@ -67,11 +66,6 @@ save_file = f'{analysis_dir}/{target_name}/{target_name}_Flux.png'
 tables = ql.read_tables(dirname)
 data = ql.read_fits(dirname, tables, apcorr_file)
 ql.plot_wd_flux(data, model_file, save_file, title=target_name)
-
-"""
-ToDO
-    Look at tutorial for subtracting BG in Stage 2 outputs
-    Implement similar version and rerun Stage 3
 """
 
 
