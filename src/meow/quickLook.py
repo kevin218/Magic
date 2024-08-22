@@ -137,7 +137,7 @@ def get_aper_corr(apcorr_file, filter, subarray):
     return apcorr30, apcorr50, apcorr70
 
 
-def plot_wd_flux(data, model_file, save_file, title=None):
+def plot_wd_flux(data, model_file, save_file, title=None, conv_factor=1):
     ''''
     
     Parameters
@@ -147,6 +147,7 @@ def plot_wd_flux(data, model_file, save_file, title=None):
     '''
     # Load model file
     model_wave, model_flux = np.genfromtxt(model_file, unpack=True)
+    model_flux *= conv_factor
     i5mu = np.argwhere(model_wave > 5)[0]
     ymax = model_flux[i5mu]
 

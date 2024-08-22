@@ -12,7 +12,7 @@ from jwst.associations import asn_from_list
 from meow.plots import show_image, overlay_catalog
 
 def call(outputdir, target_name, filter, **kwargs):
-    """Subtract sky background from CAL FITS files
+    """Run JWST Stage 3 pipeline and plot results.
 
     Parameters
     ----------
@@ -52,7 +52,7 @@ def call(outputdir, target_name, filter, **kwargs):
     cfg['resample']={}
     cfg['resample']['rotation'] = None
     cfg['resample']['kernel'] = 'gaussian'
-    cfg['outlier_detection'] = {'save_intermediate_results' : True}
+    cfg['outlier_detection'] = {'save_intermediate_results' : False}
     output = Image3Pipeline.call(miri_asn_file, steps=cfg, save_results=True)
 
     # Look at the resulting mosaic image
