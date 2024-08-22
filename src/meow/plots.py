@@ -6,6 +6,12 @@ from astropy.visualization import ImageNormalize, ManualInterval, SqrtStretch
 from astropy.stats import sigma_clipped_stats
 from astropy.io import fits
 
+colors = ['xkcd:bright blue','orange','purple','xkcd:soft green','pink']
+fmts = ['-o', '-s', '-^', '-v', 
+        '--o', '--s', '--^', '--v',
+        ':o', ':s', ':^', ':v']
+plt.rcParams['figure.constrained_layout.use'] = True
+
 # Helper script to plot before/after BG subtraction
 def before_after(data_before, data_after, vmax_before, vmax_after, 
                  title_before, title_after, savename=None, fignum=251):
@@ -95,6 +101,7 @@ def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None,
     if savename:
         plt.savefig(savename)
 
+
 # Helper script to plot an image and overlay catalog sources
 def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10, 
                     title=None, units="MJy/str", dmap="binary",
@@ -156,3 +163,64 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
 
     if savename:
         plt.savefig(savename)
+
+
+def show_true_colors(pl_colors, filters, target_list, slopes,
+                     title=None, savename=None, fignum=401):
+    '''
+    '''
+    f1, f2, f3 = filters
+
+    plt.figure(fignum, figsize=(7.1, 6))
+    plt.clf()
+    if title:
+        plt.title(title)
+    for i, target_name in enumerate(target_list):
+        plt.errorbar(pl_colors[i,0], pl_colors[i,1], 
+                     fmt=fmts[i%12], color=colors[i%5],
+                     ms=4, zorder=3, label=target_name)
+    plt.legend(loc='best', ncol=2)
+    plt.xlabel(f"({f1}-{f2})/{f2}")
+    plt.ylabel(f"({f3}-{f2})/{f2}")
+
+
+# def show_true_colors(pl_colors, title=None,
+#                     savename=None, fignum=402):
+#     '''
+#     '''
+
+    plt.figure(402, figsize=(7.1, 6))
+    plt.clf()
+    if title:
+        plt.title(title)
+    plt.errorbar(pl_colors[:,0,0], pl_colors[:,1,0], fmt='o', color=colors[0],
+             ms=4, zorder=3, label='Aperature 30 Flux')
+    plt.errorbar(pl_colors[:,0,1], pl_colors[:,1,1], fmt='s', color=colors[1],
+             ms=4, zorder=5, label='Aperature 50 Flux')
+    plt.errorbar(pl_colors[:,0,2], pl_colors[:,1,2], fmt='^', color=colors[2],
+             ms=4, zorder=7, label='Aperature 70 Flux')
+    plt.errorbar(pl_colors[:,0,3], pl_colors[:,1,3], fmt='v', color=colors[3],
+             ms=4, zorder=10, label='Aperature 100 Flux')
+    plt.legend(loc='best', ncol=2)
+    plt.xlabel(f"({f1}-{f2})/{f2}")
+    plt.ylabel(f"({f3}-{f2})/{f2}")
+
+
+
+    plt.figure(403, figsize=(7.1, 6))
+    plt.clf()
+    for i, target_name in enumerate(target_list):
+        plt.errorbar(slopes[i,1]-slopes[i,0], pl_colors[i,0,3], 
+                     fmt=fmts[i%12], color=colors[i%5],
+                     ms=4, zorder=3, label=target_name)
+    plt.legend(loc='best', ncol=2)
+    plt.xlabel(f"Slope 2 - Slope 1")
+    plt.ylabel(f"({f1}-{f2})/{f2}")
+
+    plt.figure(404, figsize=(7.1, 6))
+    plt.clf()
+    plt.errorbar(slopes[:,1]-slopes[:,0], pl_colors[:,0,3], fmt='v', color=colors[3],
+             ms=4, zorder=10, label='Aperature 100 Flux')
+    plt.xlabel(f"Slope 2 - Slope 1")
+    plt.ylabel(f"({f1}-{f2})/{f2}")
+
