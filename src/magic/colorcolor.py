@@ -96,7 +96,7 @@ plt.savefig("ColorColor-WD+Neptune.png", dpi=150)
 
 
 #############################
-model_file = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-2024-07/CPD-69-177/0310-688.txt'
+model_file = '/Users/stevekb1/Documents/data/JWST/WD/Magic-2024-07/CPD-69-177/0310-688.txt'
 model_wave, model_flux = np.genfromtxt(model_file, unpack=True)
 
 # bb = mast.planck(model_wave*1e-6, 7500)

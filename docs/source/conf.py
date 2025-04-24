@@ -17,12 +17,12 @@ sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('../../src/'))
 
-# from meow import __version__
+# from magic import __version__
 # version = __version__
 
 # -- Project information -----------------------------------------------------
 
-project = 'MEOW'
+project = 'Magic'
 copyright = '2024, Kevin B. Stevenson'
 author = 'Kevin B. Stevenson'
 

@@ -14,11 +14,11 @@ from astropy.visualization import ImageNormalize, ManualInterval, SqrtStretch
 from astropy.stats import sigma_clipped_stats
 from astropy.io import fits
 
-# import MEOW modules
-from meow.util import makedirectory
-from meow.plots import before_after, show_image
+# import Magic modules
+from magic.util import makedirectory
+from magic.plots import before_after, show_image
 
-def call(inputdir, outputdir, target_name, filter, 
+def call(inputdir, outputdir, target_name, filter,
          filetype='*_cal.fits', **kwargs):
     """Subtract sky background from CAL FITS files
 
@@ -44,14 +44,14 @@ def call(inputdir, outputdir, target_name, filter,
     im1 = ImageModel(miri_cal_files[0])
     vmax1 = np.nanmedian(im1.data)+3*np.nanstd(im1.data)
     miri_skysub_files = sn.sort_nicely(glob.glob(
-                                       os.path.join(outputdir, 
+                                       os.path.join(outputdir,
                                                     '*_skysub_cal.fits')))
     im2 = ImageModel(miri_skysub_files[0])
     vmax2 = np.nanmedian(im2.data)+3*np.nanstd(im2.data)
     title1 = f"Original Image - {target_name} - {filter}"
     title2 = f"Sky-Subtracted Image - {target_name} - {filter}"
     savename = f"{outputdir}/figs/Fig251_{target_name}_{filter}_BeforeAfter.png"
-    before_after(im1.data, im2.data, vmax1, vmax2, title1, title2, 
+    before_after(im1.data, im2.data, vmax1, vmax2, title1, title2,
                  savename=savename)
 
     # Look at the created median sky image and write to a file
@@ -59,7 +59,7 @@ def call(inputdir, outputdir, target_name, filter,
     dmap = "afmhot"
     title = f'Median Sky Image - {target_name} - {filter}'
     savename = (f"{outputdir}/figs/Fig252_{target_name}_{filter}_MedianSky.png")
-    show_image(skyflat_mean, drange_cal[0], drange_cal[1], dmap=dmap, 
+    show_image(skyflat_mean, drange_cal[0], drange_cal[1], dmap=dmap,
                title=title, savename=savename)
     fits.writeto(f'{outputdir}/{filter}_sky.fits', skyflat_mean, overwrite=True)
 
@@ -67,10 +67,10 @@ def call(inputdir, outputdir, target_name, filter,
 
 
 def make_sky(
-    inputdir, outputdir, 
+    inputdir, outputdir,
     subfiles=None,
     scalebkg=True,
-    exclude_above=None,
+    exclude_sigma=None,
     exclude_delta=None,
     ds9regions=None,
     filetype='*_cal.fits'):
@@ -88,8 +88,8 @@ def make_sky(
         Array of files to subtract sky from. If None, sky will be subracted from all input images. [default=None]
     scalebkg : boolean
         Scale each image by its median to the average value [default=True]
-    exclude_above : float
-        Exclude data above this value from the sky creation
+    exclude_sigma : float
+        Exclude data above the median bkg + this sigma value from the sky creation
     exclude_delta : float
         Exclude data above the median bkg + this value from sky creation
     ds9regions : ds9 region file
@@ -119,9 +119,6 @@ def make_sky(
         # bdata = cdata.dq & dqflags.pixel["DO_NOT_USE"] > 0
         # tdata[bdata] = np.NaN
 
-        if exclude_above is not None:
-            tdata[tdata > exclude_above] = np.NaN
-
         # if ds9regions is not None:
         #     fits_header, fits_hdulist = cdata.meta.wcs.to_fits()
         #     cwcs = WCS(fits_header)  # <-- "astropy" wcs
@@ -139,11 +136,19 @@ def make_sky(
         #     cdata.write(cfile.replace("cal.fits", "cal_mask.fits"))
         #     # fits.writeto("test.fits", inoutimage * 1., overwrite=True)
 
-        istackmed[k] = np.nanmedian(tdata)
-        print(f"  median sky = {istackmed[k]}")
+        tdata_median = np.nanmedian(tdata)
+        if exclude_sigma is not None:
+            flux_limit = tdata_median + exclude_sigma*np.nanstd(tdata)
+            tdata[tdata > flux_limit] = np.NaN
+            print(f"  Excluding data above {flux_limit} counts.")
 
         if exclude_delta is not None:
-            tdata[tdata > istackmed[k] + exclude_delta] = np.NaN
+            flux_limit = tdata_median + exclude_delta
+            tdata[tdata > flux_limit] = np.NaN
+            print(f"  Excluding data above {flux_limit} counts.")
+
+        istackmed[k] = np.nanmedian(tdata)
+        print(f"  Median sky = {istackmed[k]} counts")
 
         istack[:, :, k] = tdata
 
@@ -153,7 +158,7 @@ def make_sky(
     #medsky = np.mean(istackmed)  ########### This is where the combination can be changed between mean or median
     medsky = np.median(istackmed)
     ##############################################
-    
+
     if scalebkg:
         print("Scaling individual images to median bkg")
         for k in range(len(files)):

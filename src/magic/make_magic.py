@@ -1,13 +1,13 @@
 
 import os
-from meow import S2_sky, S3_image, S4_trends, util
+from magic import S2_sky, S3_image, S4_trends, util
 # from importlib import reload
 # reload(S3_image)
 
 
 mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
 jwst_dir = '/Users/stevekb1/Documents/data/JWST/WD/JWST-S2'
-meow_dir = '/Users/stevekb1/Documents/data/JWST/WD/MEOW-2024-07'
+magic_dir = '/Users/stevekb1/Documents/data/JWST/WD/Magic-2024-07'
 filetype = '*_cal.fits'
 
 # Move downloaded files from MAST dir to JWST dir
@@ -16,27 +16,27 @@ filetype = '*_cal.fits'
 # Get unique list of target names and filters
 target_list, filter_list = util.getTargetInfo(jwst_dir, filetype)
 
-# Run MEOW Stage 2 (sky BG subtractiong) on all targets and filters
+# Run Magic Stage 2 (sky BG subtractiong) on all targets and filters
 for target_name in target_list:
     for filter in filter_list:
         inputdir = os.path.join(jwst_dir, target_name, filter)
-        outputdir_S2 = os.path.join(meow_dir, target_name, filter)
+        outputdir_S2 = os.path.join(magic_dir, target_name, filter)
         if os.path.exists(inputdir):
             print(f"Processing target {target_name}, filter {filter}")
             S2_sky.call(inputdir, outputdir_S2, target_name, filter)
 
-# Run MEOW Stage 3 (JWST Stage 3 wrapper) on all targets and filters
+# Run Magic Stage 3 (JWST Stage 3 wrapper) on all targets and filters
 for target_name in target_list:
     for filter in filter_list:
-        outputdir_S3 = os.path.join(meow_dir, target_name, filter)
+        outputdir_S3 = os.path.join(magic_dir, target_name, filter)
         if os.path.exists(outputdir_S3):
             print(f"Processing target {target_name}, filter {filter}")
             S3_image.call(outputdir_S3, target_name, filter)
 
-# Run MEOW Stage 4 (trends) on all targets and filters
+# Run Magic Stage 4 (trends) on all targets and filters
 apcorr_file = '/Users/stevekb1/Documents/Analyses/JWST/WD/aperture_correction_tab3.csv'
 filters = ['F770W', 'F1800W', 'F2100W']
-S4_trends.call(meow_dir, filters, target_list, apcorr_file)
+S4_trends.call(magic_dir, filters, target_list, apcorr_file)
 
 
 

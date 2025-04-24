@@ -98,11 +98,11 @@ def get_wd_flux(data, table, apcorr_file):
     data['filter'] = str(data.mhdr['FILTER'])
     data['subarray'] = str(data.mhdr['SUBARRAY'])
     data['wavelength'] = float(str(data.filter.values).strip('F').strip('W'))/100
-    
+
     # Compute distance of each identified object from expected target position
     ra = data.mhdr['TARG_RA'] * u.deg
     dec = data.mhdr['TARG_DEC'] * u.deg
-    distance = np.sqrt((table['sky_centroid'].ra - ra)**2 + 
+    distance = np.sqrt((table['sky_centroid'].ra - ra)**2 +
                        (table['sky_centroid'].dec - dec)**2)
     # Determine index of nearest object to expected target position
     itarget = np.argsort(distance)[0]
@@ -137,9 +137,10 @@ def get_aper_corr(apcorr_file, filter, subarray):
     return apcorr30, apcorr50, apcorr70
 
 
-def plot_wd_flux(data, model_file, save_file, title=None, conv_factor=1):
+def plot_wd_flux(data, model_file, save_file, title=None,
+                 conv_factor=1, ncol=1):
     ''''
-    
+
     Parameters
     ----------
     data : Xarray Dataset
@@ -155,11 +156,11 @@ def plot_wd_flux(data, model_file, save_file, title=None, conv_factor=1):
     iwave = np.zeros(data.wavelength.size, dtype=int)
     for ii, wave in enumerate(data.wavelength):
         iwave[ii] = np.argwhere(model_wave > wave.values)[0]
-    
+
     # Normalize measured flux by model
-    flux = np.array([data.aper30_flux, data.aper50_flux, 
+    flux = np.array([data.aper30_flux, data.aper50_flux,
                      data.aper70_flux, data.aper100_flux])
-    flux_err = np.array([data.aper30_flux_err, data.aper50_flux_err, 
+    flux_err = np.array([data.aper30_flux_err, data.aper50_flux_err,
                          data.aper70_flux_err, data.aper100_flux_err])
     norm_flux = flux/model_flux[np.newaxis,iwave]
     norm_flux_err = flux_err/model_flux[np.newaxis,iwave]
@@ -173,15 +174,15 @@ def plot_wd_flux(data, model_file, save_file, title=None, conv_factor=1):
     # Plot absolute flux
     plt.subplot(211)
     plt.title(title, size=12)
-    plt.errorbar(data.wavelength, data.aper30_flux, data.aper30_flux_err, fmt='o', 
+    plt.errorbar(data.wavelength, data.aper30_flux, data.aper30_flux_err, fmt='o',
                  color=colors[0], ms=4, zorder=3, label='Aperature 30 Flux')
-    plt.errorbar(data.wavelength, data.aper50_flux, data.aper50_flux_err, fmt='o', 
+    plt.errorbar(data.wavelength, data.aper50_flux, data.aper50_flux_err, fmt='o',
                  color=colors[2], ms=4, zorder=3, label='Aperature 50 Flux')
-    plt.errorbar(data.wavelength, data.aper70_flux, data.aper70_flux_err, fmt='o', 
+    plt.errorbar(data.wavelength, data.aper70_flux, data.aper70_flux_err, fmt='o',
                  color=colors[3], ms=4, zorder=3, label='Aperature 70 Flux')
-    plt.errorbar(data.wavelength, data.aper100_flux, data.aper100_flux_err, fmt='o', 
+    plt.errorbar(data.wavelength, data.aper100_flux, data.aper100_flux_err, fmt='o',
                  color=colors[4], ms=4, zorder=3, label='Aperature Total Flux')
-    plt.plot(model_wave, model_flux, '-', color=colors[1], 
+    plt.plot(model_wave, model_flux, '-', color=colors[1],
              zorder=1, label='Model')
     plt.legend(loc='upper right')
     plt.xlim(5, 25)
@@ -189,21 +190,21 @@ def plot_wd_flux(data, model_file, save_file, title=None, conv_factor=1):
     plt.ylabel("Flux (mJy)")
     # Plot infrared excess
     plt.subplot(212)
-    plt.errorbar(data.wavelength, planet_flux[0], planet_flux_err[0], fmt='o', 
+    plt.errorbar(data.wavelength, planet_flux[0], planet_flux_err[0], fmt='o',
                  color=colors[0], ms=4, zorder=3, label='Aperature 30 Flux')
-    plt.errorbar(data.wavelength, planet_flux[1], planet_flux_err[1], fmt='o', 
+    plt.errorbar(data.wavelength, planet_flux[1], planet_flux_err[1], fmt='o',
                  color=colors[2], ms=4, zorder=3, label='Aperature 50 Flux')
-    plt.errorbar(data.wavelength, planet_flux[2], planet_flux_err[2], fmt='o', 
+    plt.errorbar(data.wavelength, planet_flux[2], planet_flux_err[2], fmt='o',
                  color=colors[3], ms=4, zorder=3, label='Aperature 70 Flux')
-    plt.errorbar(data.wavelength, planet_flux[3], planet_flux_err[3], fmt='o', 
+    plt.errorbar(data.wavelength, planet_flux[3], planet_flux_err[3], fmt='o',
                  color=colors[4], ms=4, zorder=3, label='Aperature Total Flux')
     plt.hlines(0, 5, 25, ls='solid', color=colors[1])
-    plt.hlines([-3, 3], 5, 25, ls='dotted', color=colors[1], 
+    plt.hlines([-3, 3], 5, 25, ls='dotted', color=colors[1],
                label='3% Abs. Flux Unc.', alpha=0.5)
-    plt.legend(loc='best', ncol=2)
+    plt.legend(loc='best', ncol=ncol)
     plt.xlim(5, 25)
-    ymin = np.min((planet_flux.min()-3*planet_flux_err.max(), -5))
-    ymax = np.max((planet_flux.max()+3*planet_flux_err.max(), 5))
+    ymin = np.min((np.nanmin(planet_flux)-3*np.nanmax(planet_flux_err), -5))
+    ymax = np.max((np.nanmax(planet_flux)+3*np.nanmax(planet_flux_err), 5))
     plt.ylim(ymin, ymax)
     plt.ylabel("Infrared Excess (%)")
     plt.xlabel("Wavelength ($\mu m$)")

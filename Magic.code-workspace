@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../Analyses/JWST/WD/CPD-69-177/F1800W"
+		},
+		{
+			"path": "../../Analyses/JWST/WD/CPD-69-177/F770W"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

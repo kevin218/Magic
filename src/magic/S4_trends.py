@@ -3,12 +3,12 @@ import glob, os
 import sort_nicely as sn
 from astropy.io import ascii
 
-# import MEOW modules
-# from meow.plots import show_image, overlay_catalog
-from meow import quickLook as ql
+# import Magic modules
+# from magic.plots import show_image, overlay_catalog
+from magic import quickLook as ql
 
 
-def call(meow_dir, filters, target_list, apcorr_file, **kwargs):
+def call(magic_dir, filters, target_list, apcorr_file, **kwargs):
     """Plot trends for all targets in directory using given filters.
 
     Parameters
@@ -21,14 +21,14 @@ def call(meow_dir, filters, target_list, apcorr_file, **kwargs):
     slopes = []
     for target_name in target_list:
         print(f"Processing target {target_name}")
-        dirname = os.path.join(meow_dir, target_name)
+        dirname = os.path.join(magic_dir, target_name)
         tables = ql.read_tables(dirname)
         data = ql.read_fits(dirname, tables, apcorr_file)
         # pl_color = determineColors(data, filters)
         pl_color, slope = determineColors2(data, filters)
         pl_colors.append(pl_color)
         slopes.append(slope)
-    
+
     pl_colors = np.transpose(np.array(pl_colors), (0, 2, 1))
     slopes = np.array(slopes)
 
@@ -36,14 +36,14 @@ def call(meow_dir, filters, target_list, apcorr_file, **kwargs):
 
 def determineColors(data, filters):
     """
-    
+
     """
     # Make sure there are exactly 3 filters
     if len(filters) != 3:
         print("Exactly three filters are required.")
         print(f"Filters given: {filters}")
         return None
-    
+
     # Select and sort the filters into the correct order
     f1, f2, f3 = filters
     w1 = float(f1.strip('F').strip('W'))/100
@@ -57,21 +57,21 @@ def determineColors(data, filters):
     color_70 = (foo.aper70_flux[[0,2]] - foo.aper70_flux[1])/foo.aper70_flux[1]
     color_100 = (foo.aper100_flux[[0,2]] - foo.aper100_flux[1])/foo.aper100_flux[1]
 
-    pl_color = np.array([color_30.values, color_50.values, 
+    pl_color = np.array([color_30.values, color_50.values,
                        color_70.values, color_100.values])
     return pl_color
 
 
 def determineColors2(data, filters):
     """
-    
+
     """
     # Make sure there are exactly 3 filters
     if len(filters) != 3:
         print("Exactly three filters are required.")
         print(f"Filters given: {filters}")
         return None
-    
+
     # Select and sort the filters into the correct order
     f1, f2, f3 = filters
     w1 = float(f1.strip('F').strip('W'))/100
@@ -85,9 +85,9 @@ def determineColors2(data, filters):
     color_70 = (foo.aper70_flux[[0,2]] - foo.aper70_flux[1])/foo.aper70_flux[1]
     color_100 = (foo.aper100_flux[[0,2]] - foo.aper100_flux[1])/foo.aper100_flux[1]
 
-    pl_color = np.array([color_30.values, color_50.values, 
+    pl_color = np.array([color_30.values, color_50.values,
                         color_70.values, color_100.values])
-    
+
 
     log_flux = np.log(foo.aper100_flux)
     log_wave = np.log10((w1, w2, w3))
