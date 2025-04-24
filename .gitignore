@@ -1,0 +1,7 @@
+.DS_Store
+docs/.DS_Store
+src/.DS_Store
+src/magic/__pycache__/*
+src/magic.egg-info/*
+STScI_Demos/*
+docs/.DS_Store
