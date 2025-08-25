@@ -1,10 +1,7 @@
 import numpy as np
-import glob, os
-import sort_nicely as sn
-from astropy.io import ascii
+import os
 
 # import Magic modules
-# from magic.plots import show_image, overlay_catalog
 from magic import quickLook as ql
 
 

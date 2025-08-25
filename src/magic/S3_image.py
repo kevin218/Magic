@@ -1,5 +1,4 @@
 import glob, os
-import sort_nicely as sn
 from astropy.io import ascii
 
 # import jwst pipeline modules
@@ -10,6 +9,7 @@ from jwst.associations import asn_from_list
 
 # import Magic modules
 from magic.plots import show_image, overlay_catalog
+import magic.sort_nicely as sn
 
 def call(outputdir, target_name, filter, **kwargs):
     """Run JWST Stage 3 pipeline and plot results.

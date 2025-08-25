@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import glob, os
-import sort_nicely as sn
 
 # import jwst pipeline modules
 # import jwst
@@ -17,6 +16,7 @@ from astropy.io import fits
 # import Magic modules
 from magic.util import makedirectory
 from magic.plots import before_after, show_image
+import magic.sort_nicely as sn
 
 def call(inputdir, outputdir, target_name, filter,
          filetype='*_cal.fits', **kwargs):
@@ -100,14 +100,10 @@ def make_sky(
     if len(files) == 0:
         print("No files found.")
         return None, None
-    # if ds9regions is not None:
-    #     ereg = Regions.read(ds9regions, format="ds9")
-        # for creg in ereg:
-        #     creg.radius *= 0.5
 
     istack = None
     for k, cfile in enumerate(files):
-        print(f"processing {cfile}")
+        print(f"  Processing {cfile}")
         cdata = datamodels.open(cfile)
         if istack is None:
             isize = cdata.data.shape
@@ -119,44 +115,27 @@ def make_sky(
         # bdata = cdata.dq & dqflags.pixel["DO_NOT_USE"] > 0
         # tdata[bdata] = np.NaN
 
-        # if ds9regions is not None:
-        #     fits_header, fits_hdulist = cdata.meta.wcs.to_fits()
-        #     cwcs = WCS(fits_header)  # <-- "astropy" wcs
-
-        #     pixx = np.arange(isize[1])
-        #     pixy = np.arange(isize[0])
-        #     imagex, imagey = np.meshgrid(pixx, pixy)
-        #     imagera, imagedec = cwcs.wcs_pix2world(imagex, imagey, 0)
-        #     # imagera, imagedec = cwcs.pixel_to_world(imagex, imagey, 0)
-        #     skycoord = SkyCoord(imagera, imagedec, unit="deg")
-        #     for creg in ereg:
-        #         inoutimage = creg.contains(skycoord, cwcs)
-        #         tdata[inoutimage] = np.NaN
-        #     cdata.data = tdata
-        #     cdata.write(cfile.replace("cal.fits", "cal_mask.fits"))
-        #     # fits.writeto("test.fits", inoutimage * 1., overwrite=True)
-
         tdata_median = np.nanmedian(tdata)
         if exclude_sigma is not None:
             flux_limit = tdata_median + exclude_sigma*np.nanstd(tdata)
             tdata[tdata > flux_limit] = np.NaN
-            print(f"  Excluding data above {flux_limit} counts.")
+            print(f"    Excluding data above {flux_limit} counts.")
 
         if exclude_delta is not None:
             flux_limit = tdata_median + exclude_delta
             tdata[tdata > flux_limit] = np.NaN
-            print(f"  Excluding data above {flux_limit} counts.")
+            print(f"    Excluding data above {flux_limit} counts.")
 
         istackmed[k] = np.nanmedian(tdata)
-        print(f"  Median sky = {istackmed[k]} counts")
+        print(f"    Median sky = {istackmed[k]} counts")
 
         istack[:, :, k] = tdata
 
     # adjust the levels to the median
     # allows for data taken at different times with different backgrounds
     ##############################################
-    #medsky = np.mean(istackmed)  ########### This is where the combination can be changed between mean or median
-    medsky = np.median(istackmed)
+    #medsky = np.nanmean(istackmed)  ########### This is where the combination can be changed between mean or median
+    medsky = np.nanmedian(istackmed)
     ##############################################
 
     if scalebkg:

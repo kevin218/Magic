@@ -7,15 +7,15 @@ from astropy.stats import sigma_clipped_stats
 from astropy.io import fits
 
 colors = ['xkcd:bright blue','orange','purple','xkcd:soft green','pink']
-fmts = ['-o', '-s', '-^', '-v', 
+fmts = ['-o', '-s', '-^', '-v',
         '--o', '--s', '--^', '--v',
         ':o', ':s', ':^', ':v']
 plt.rcParams['figure.constrained_layout.use'] = True
 
 # Helper script to plot before/after BG subtraction
-def before_after(data_before, data_after, vmax_before, vmax_after, 
+def before_after(data_before, data_after, vmax_before, vmax_after,
                  title_before, title_after, savename=None, fignum=251):
-    """Function to generate 2D image from before and after 
+    """Function to generate 2D image from before and after
     background subtraction.
 
     Parameters
@@ -47,17 +47,17 @@ def before_after(data_before, data_after, vmax_before, vmax_after,
     plt.xlabel("Pixel Column")
     plt.colorbar()
     plt.subplot(122)
-    plt.title(title_after)    
+    plt.title(title_after)
     plt.imshow(data_after, cmap='Greys', origin='lower', vmin=0, vmax=vmax_after)
     plt.ylabel("Pixel Row")
     plt.xlabel("Pixel Column")
     plt.colorbar()
     if savename:
-        plt.savefig(savename)
-    
+        plt.savefig(savename, dpi=200)
+
 
 # Helper script to plot 2D images
-def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None, 
+def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None,
                units="DN", dmap="binary", savename=None, fignum=252):
     """Function to generate a 2D, log-scaled image of the data,
     with an option to highlight a specific pixel (with a red dot).
@@ -84,10 +84,10 @@ def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None,
     fignum : int
         Figure number
     """
-    norm = ImageNormalize(data_2d, 
-                          interval=ManualInterval(vmin=vmin, vmax=vmax), 
+    norm = ImageNormalize(data_2d,
+                          interval=ManualInterval(vmin=vmin, vmax=vmax),
                           stretch=SqrtStretch())
-    
+
     plt.figure(fignum, figsize=(7.1, 6))
     plt.clf()
     if title:
@@ -99,11 +99,11 @@ def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None,
     plt.xlabel("Pixel Column")
     plt.ylabel("Pixel Row")
     if savename:
-        plt.savefig(savename)
+        plt.savefig(savename, dpi=200)
 
 
 # Helper script to plot an image and overlay catalog sources
-def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10, 
+def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
                     title=None, units="MJy/str", dmap="binary",
                     savename=None, fignum=302):
     """Function to generate a 2D image of the data,
@@ -133,9 +133,9 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
         Figure number
     """
     norm = ImageNormalize(
-        data_2d, interval=ManualInterval(vmin=vmin, vmax=vmax), 
+        data_2d, interval=ManualInterval(vmin=vmin, vmax=vmax),
         stretch=SqrtStretch())
-    
+
     plt.figure(fignum, figsize=(7.1, 6))
     plt.clf()
     if title:
@@ -162,7 +162,7 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
     # plt.subplots_adjust(left=0.15)
 
     if savename:
-        plt.savefig(savename)
+        plt.savefig(savename, dpi=200)
 
 
 def show_true_colors(pl_colors, filters, target_list, slopes,
@@ -176,7 +176,7 @@ def show_true_colors(pl_colors, filters, target_list, slopes,
     if title:
         plt.title(title)
     for i, target_name in enumerate(target_list):
-        plt.errorbar(pl_colors[i,0], pl_colors[i,1], 
+        plt.errorbar(pl_colors[i,0], pl_colors[i,1],
                      fmt=fmts[i%12], color=colors[i%5],
                      ms=4, zorder=3, label=target_name)
     plt.legend(loc='best', ncol=2)
@@ -210,7 +210,7 @@ def show_true_colors(pl_colors, filters, target_list, slopes,
     plt.figure(403, figsize=(7.1, 6))
     plt.clf()
     for i, target_name in enumerate(target_list):
-        plt.errorbar(slopes[i,1]-slopes[i,0], pl_colors[i,0,3], 
+        plt.errorbar(slopes[i,1]-slopes[i,0], pl_colors[i,0,3],
                      fmt=fmts[i%12], color=colors[i%5],
                      ms=4, zorder=3, label=target_name)
     plt.legend(loc='best', ncol=2)
