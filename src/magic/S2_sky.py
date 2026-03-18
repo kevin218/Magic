@@ -32,12 +32,15 @@ def call(inputdir, outputdir, target_name, filter,
         Name of observed star
     filter : str
         MIRI filter name
+    filetype : str
+        File type to look for in inputdir. Default is '*_cal.fits'
     """
     # Create output directory if it doesn't exist
     makedirectory(outputdir)
 
     # Use the script make_sky to make and subtract off the sky background image.
-    skyflat_mean, skyflat_std = make_sky(inputdir, outputdir, **kwargs)
+    skyflat_mean, skyflat_std = make_sky(inputdir, outputdir,
+                                         filetype=filetype, **kwargs)
 
     # Look at cal image before and after sky subtraction
     miri_cal_files = sn.sort_nicely(glob.glob(os.path.join(inputdir, filetype)))

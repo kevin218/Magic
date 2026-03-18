@@ -1,5 +1,6 @@
 import glob, os
-from astropy.io import ascii
+# from astropy.io import ascii
+from astropy.table import Table
 
 # import jwst pipeline modules
 from jwst.pipeline import Image3Pipeline # pipeline modules
@@ -11,7 +12,8 @@ from jwst.associations import asn_from_list
 from magic.plots import show_image, overlay_catalog
 import magic.sort_nicely as sn
 
-def call(outputdir, target_name, filter, **kwargs):
+def call(outputdir, target_name, filter,
+         filetype='*_skysub_cal.fits', **kwargs):
     """Run JWST Stage 3 pipeline and plot results.
 
     Parameters
@@ -22,6 +24,8 @@ def call(outputdir, target_name, filter, **kwargs):
         Name of observed star
     filter : str
         MIRI filter name
+    filetype : str
+        File type to look for in inputdir. Default is '*_skysub_cal.fits'
     """
     # Change directory to location of files because the JWST pipeline
     # only outputs results into the current working directory
@@ -30,9 +34,9 @@ def call(outputdir, target_name, filter, **kwargs):
 
     # Gather sky subtracted cal files
     miri_skysub_files = sn.sort_nicely(
-        glob.glob(f'{outputdir}/*_skysub_cal.fits'))
+        glob.glob(f'{outputdir}/{filetype}'))
 
-    # Ase asn_from_list to create association table
+    # Use asn_from_list to create association table
     miri_asn_name = f'{outputdir}/miri_{filter}_stage3_asn_skysub'
     asn = asn_from_list.asn_from_list(miri_skysub_files,
                                       rule=DMS_Level3_Base,
@@ -69,7 +73,7 @@ def call(outputdir, target_name, filter, **kwargs):
     # Look at mosaic data and sources found with source_catalog
     miri_catalog_file = miri_asn_name + '_cat.ecsv'
     # Read in the source catalog
-    miri_source_cat = ascii.read(miri_catalog_file)
+    miri_source_cat = Table.read(miri_catalog_file)
     # Show the catalog sources on the mosaic
     title = f"Mosaic With Source Catalog - {target_name} - {filter}"
     savename = f"{outputdir}/figs/Fig302_{target_name}_{filter}_SourceCatalog.png"

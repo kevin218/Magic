@@ -104,8 +104,8 @@ def show_image(data_2d, vmin, vmax, xpixel=None, ypixel=None, title=None,
 
 # Helper script to plot an image and overlay catalog sources
 def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
-                    title=None, units="MJy/str", dmap="binary",
-                    savename=None, fignum=302):
+                    title=None, units="MJy/str", dmap="binary", mfc="red",
+                    mec="red", savename=None, fignum=302):
     """Function to generate a 2D image of the data,
     with sources overlaid.
 
@@ -143,13 +143,14 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
     plt.imshow(data_2d, origin="lower", norm=norm, cmap=plt.get_cmap(dmap))
 
     for row in catalog:
-        if row["aper_total_flux"].value > flux_limit:
+        if (flux_limit is None) or (row["aper_total_flux"] > flux_limit):
             plt.plot(
                 row["xcentroid"],
                 row["ycentroid"],
                 marker="o",
                 markersize="3",
-                color="red",
+                mfc=mfc,
+                mec=mec,
             )
 
     plt.xlabel("Pixel column")
