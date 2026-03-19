@@ -3,7 +3,7 @@ import os
 import glob
 import shutil
 import astropy.io.fits as pf
-from sort_nicely import sort_nicely as sn
+from magic.sort_nicely import sort_nicely as sn
 
 def makedirectory(outputdir):
     """Creates a directory for the current stage.
@@ -30,7 +30,7 @@ def makedirectory(outputdir):
 
 def sortMAST(mast_dir, jwst_dir, filetype='*_cal.fits'):
     """Sort files downloaded from MAST
-    
+
     Parameters
     ----------
     mast_dir : str
@@ -79,10 +79,10 @@ def getTargetInfo(jwst_dir, filetype='*_cal.fits'):
         hdr = pf.getheader(filename)
         target_name.append(hdr['TARGPROP'])
         filter.append(hdr['FILTER'])
-    
+
     # Build unique set of targets and filters
     target_list = set(target_name)
     filter_list = set(filter)
 
     # Return sorted lists
-    return sn(sorted(target_list)), sn(sorted(filter_list))     
+    return sn(sorted(target_list)), sn(sorted(filter_list))
