@@ -51,7 +51,7 @@ def sortMAST(mast_dir, jwst_dir, filetype='*_cal.fits'):
     target_files = []
     for filename in files:
         hdr = pf.getheader(filename)
-        target_name = hdr['TARGPROP']
+        target_name = hdr['TARGPROP'] + '_obs' + hdr['OBSERVTN']
         filter = hdr['FILTER']
         target_dir = os.path.join(jwst_dir, target_name, filter)
         # Create directory
@@ -77,7 +77,7 @@ def getTargetInfo(jwst_dir, filetype='*_cal.fits'):
     filter = []
     for filename in files:
         hdr = pf.getheader(filename)
-        target_name.append(hdr['TARGPROP'])
+        target_name.append(hdr['TARGPROP'] + '_obs' + hdr['OBSERVTN'])
         filter.append(hdr['FILTER'])
 
     # Build unique set of targets and filters
