@@ -2,7 +2,7 @@
 """
 Magic Pipeline
 
-This module orchestrates the MAGIC pipeline for processing JWST MIRI imaging data.
+This module orchestrates the Magic pipeline for processing JWST MIRI imaging data.
 The pipeline consists of several stages:
 - Stage 2: Sky background subtraction
 - Stage 3: Image combination and mosaicking using JWST Stage 3 pipeline
@@ -14,21 +14,23 @@ https://photutils.readthedocs.io/en/stable/api/photutils.detection.DAOStarFinder
 https://github.com/STScI-MIRI/Imaging_ExampleNB/blob/main/Pipeline_demo_subtract_imager_background.ipynb
 """
 
-import os
-from magic import S2_sky, S3_image, util
+from magic import S2_sky, S3_image
+from magic.lib import util
 
 # Location of files downloaded from MAST
-mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
+mast_dir = './MAST'
 # Location of files after sorting by target and filter
-jwst_dir = '/Users/stevekb1/Documents/data/JWST/WD/JWST-S2'
+jwst_dir = './JWST-S2'
 # Output location when making Magic
-magic_dir = '/Users/stevekb1/Documents/data/JWST/WD/Magic-2024-07'
+magic_dir = './Magic-2026-04-01'
 # Stage 2 file type (should normally be *_cal.fits)
 filetype = '*_cal.fits'
 
 # Move and sort downloaded files from MAST dir to JWST dir
 # Comment out this line if reprocessing data that has already been sorted
 files = util.sortMAST(mast_dir, jwst_dir, filetype)
+print(f"Found {len(target_list)} unique targets: {target_list}")
+print(f"Found {len(filter_list)} unique filters: {filter_list}")
 
 # Get unique list of target names and filters
 # Target names include the observation number for unique identification

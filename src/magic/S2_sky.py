@@ -12,9 +12,9 @@ from astropy.stats import sigma_clipped_stats
 from astropy.io import fits
 
 # import Magic modules
-from magic.util import makedirectory
+from magic.lib.util import makedirectory
 from magic.plots import before_after, show_image
-import magic.sort_nicely as sn
+import magic.lib.sort_nicely as sn
 
 
 def batch_call(jwst_dir, magic_dir, target_list, filter_list,

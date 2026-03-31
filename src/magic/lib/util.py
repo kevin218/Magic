@@ -3,7 +3,7 @@ import os
 import glob
 import shutil
 import astropy.io.fits as pf
-from magic.sort_nicely import sort_nicely as sn
+from magic.lib.sort_nicely import sort_nicely as sn
 
 def makedirectory(outputdir):
     """Creates a directory for the current stage.

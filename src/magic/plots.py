@@ -1,9 +1,16 @@
+"""
+Plotting utilities for the Magic pipeline.
+
+This module provides functions for creating various plots used in the Magic
+pipeline, including image visualization, source overlay plots, and color-color
+diagrams.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams['figure.constrained_layout.use'] = True
 
 from astropy.visualization import ImageNormalize, ManualInterval, SqrtStretch
-from astropy.stats import sigma_clipped_stats
 from astropy.io import fits
 
 colors = ['xkcd:bright blue','orange','purple','xkcd:soft green','pink']
@@ -156,11 +163,6 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
     plt.xlabel("Pixel column")
     plt.ylabel("Pixel row")
     plt.colorbar(label=units)
-    # plt.tight_layout()
-
-    # fig.colorbar(im, label=units)
-    # fig.tight_layout()
-    # plt.subplots_adjust(left=0.15)
 
     if savename:
         plt.savefig(savename, dpi=200)
@@ -168,10 +170,34 @@ def overlay_catalog(data_2d, catalog, flux_limit=0, vmin=0, vmax=10,
 
 def show_true_colors(pl_colors, filters, target_list, slopes,
                      title=None, savename=None, fignum=401):
-    '''
-    '''
+    """Create color-color and color-slope plots for multiple targets.
+
+    This function generates four different plots:
+    1. Color-color diagram for all targets
+    2. Color-color diagram showing different aperture sizes
+    3. Color vs slope difference for all targets
+    4. Color vs slope difference for largest aperture
+
+    Parameters
+    ----------
+    pl_colors : numpy.ndarray
+        Color measurements for each target and aperture size
+    filters : list
+        List of three filter names [f1, f2, f3]
+    target_list : list
+        List of target names
+    slopes : numpy.ndarray
+        Slope measurements for each target
+    title : str, optional
+        Title for the plots
+    savename : str, optional
+        Base filename for saving plots (will append figure numbers)
+    fignum : int
+        Starting figure number (default: 401)
+    """
     f1, f2, f3 = filters
 
+    # Figure 401: Color-color diagram for all targets
     plt.figure(fignum, figsize=(7.1, 6))
     plt.clf()
     if title:
@@ -183,45 +209,51 @@ def show_true_colors(pl_colors, filters, target_list, slopes,
     plt.legend(loc='best', ncol=2)
     plt.xlabel(f"({f1}-{f2})/{f2}")
     plt.ylabel(f"({f3}-{f2})/{f2}")
+    if savename:
+        plt.savefig(f"{savename}_color_color_targets.png", dpi=200)
 
-
-# def show_true_colors(pl_colors, title=None,
-#                     savename=None, fignum=402):
-#     '''
-#     '''
-
-    plt.figure(402, figsize=(7.1, 6))
+    # Figure 402: Color-color diagram showing different aperture sizes
+    plt.figure(fignum+1, figsize=(7.1, 6))
     plt.clf()
     if title:
-        plt.title(title)
+        plt.title(f"{title} - Aperture Comparison")
     plt.errorbar(pl_colors[:,0,0], pl_colors[:,1,0], fmt='o', color=colors[0],
-             ms=4, zorder=3, label='Aperature 30 Flux')
+             ms=4, zorder=3, label='Aperture 30 Flux')
     plt.errorbar(pl_colors[:,0,1], pl_colors[:,1,1], fmt='s', color=colors[1],
-             ms=4, zorder=5, label='Aperature 50 Flux')
+             ms=4, zorder=5, label='Aperture 50 Flux')
     plt.errorbar(pl_colors[:,0,2], pl_colors[:,1,2], fmt='^', color=colors[2],
-             ms=4, zorder=7, label='Aperature 70 Flux')
+             ms=4, zorder=7, label='Aperture 70 Flux')
     plt.errorbar(pl_colors[:,0,3], pl_colors[:,1,3], fmt='v', color=colors[3],
-             ms=4, zorder=10, label='Aperature 100 Flux')
+             ms=4, zorder=10, label='Aperture 100 Flux')
     plt.legend(loc='best', ncol=2)
     plt.xlabel(f"({f1}-{f2})/{f2}")
     plt.ylabel(f"({f3}-{f2})/{f2}")
+    if savename:
+        plt.savefig(f"{savename}_color_color_apertures.png", dpi=200)
 
-
-
-    plt.figure(403, figsize=(7.1, 6))
+    # Figure 403: Color vs slope difference for all targets
+    plt.figure(fignum+2, figsize=(7.1, 6))
     plt.clf()
+    if title:
+        plt.title(f"{title} - Slope Analysis")
     for i, target_name in enumerate(target_list):
         plt.errorbar(slopes[i,1]-slopes[i,0], pl_colors[i,0,3],
                      fmt=fmts[i%12], color=colors[i%5],
                      ms=4, zorder=3, label=target_name)
     plt.legend(loc='best', ncol=2)
-    plt.xlabel(f"Slope 2 - Slope 1")
+    plt.xlabel("Slope 2 - Slope 1")
     plt.ylabel(f"({f1}-{f2})/{f2}")
+    if savename:
+        plt.savefig(f"{savename}_color_slope_targets.png", dpi=200)
 
-    plt.figure(404, figsize=(7.1, 6))
+    # Figure 404: Color vs slope difference for largest aperture
+    plt.figure(fignum+3, figsize=(7.1, 6))
     plt.clf()
+    if title:
+        plt.title(f"{title} - Slope vs Color (100px Aperture)")
     plt.errorbar(slopes[:,1]-slopes[:,0], pl_colors[:,0,3], fmt='v', color=colors[3],
-             ms=4, zorder=10, label='Aperature 100 Flux')
-    plt.xlabel(f"Slope 2 - Slope 1")
+             ms=4, zorder=10, label='Aperture 100 Flux')
+    plt.xlabel("Slope 2 - Slope 1")
     plt.ylabel(f"({f1}-{f2})/{f2}")
-
+    if savename:
+        plt.savefig(f"{savename}_color_slope_aperture100.png", dpi=200)

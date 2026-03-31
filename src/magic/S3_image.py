@@ -10,7 +10,7 @@ from jwst.associations import asn_from_list
 
 # import Magic modules
 from magic.plots import show_image, overlay_catalog
-import magic.sort_nicely as sn
+import magic.lib.sort_nicely as sn
 
 
 def batch_call(magic_dir, target_list, filter_list, **kwargs):

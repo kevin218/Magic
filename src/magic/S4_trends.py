@@ -2,7 +2,7 @@ import numpy as np
 import os
 
 # import Magic modules
-from magic import quickLook as ql
+from magic.ql import quickLook as ql
 
 
 def call(magic_dir, filters, target_list, apcorr_file, **kwargs):

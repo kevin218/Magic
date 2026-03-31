@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits, ascii
 from astropy import units as u
 import astraeus.xarrayIO as xrio
-from magic.sort_nicely import sort_nicely
+from magic.lib.sort_nicely import sort_nicely
 import pandas as pd
 import glob
 

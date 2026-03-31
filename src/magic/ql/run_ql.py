@@ -1,7 +1,7 @@
 
 import os
-from magic import util
-from magic import quickLook as ql
+from magic.lib import util
+from magic.ql import quickLook as ql
 from importlib import reload
 reload(ql)
 
