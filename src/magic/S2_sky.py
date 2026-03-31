@@ -18,6 +18,36 @@ from magic.util import makedirectory
 from magic.plots import before_after, show_image
 import magic.sort_nicely as sn
 
+
+def batch_call(jwst_dir, magic_dir, target_list, filter_list,
+               filetype='*_cal.fits', **kwargs):
+    """Process sky background subtraction for multiple targets and filters.
+
+    Parameters
+    ----------
+    jwst_dir : str
+        Root directory containing JWST Stage 2 data organized by target and filter
+    magic_dir : str
+        Root output directory for Magic-processed data
+    target_list : list
+        List of target names to process
+    filter_list : list
+        List of filters to process
+    filetype : str
+        File type to look for in input directories. Default is '*_cal.fits'
+    **kwargs : dict
+        Additional keyword arguments passed to call()
+    """
+    for target_name in target_list:
+        for filter in filter_list:
+            inputdir = os.path.join(jwst_dir, target_name, filter)
+            outputdir_S2 = os.path.join(magic_dir, target_name, filter)
+            if os.path.exists(inputdir):
+                print(f"Processing target {target_name}, filter {filter}")
+                call(inputdir, outputdir_S2, target_name, filter, 
+                     filetype=filetype, **kwargs)
+
+
 def call(inputdir, outputdir, target_name, filter,
          filetype='*_cal.fits', **kwargs):
     """Subtract sky background from CAL FITS files

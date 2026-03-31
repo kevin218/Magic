@@ -16,22 +16,11 @@ filetype = '*_cal.fits'
 # Get unique list of target names and filters
 target_list, filter_list = util.getTargetInfo(jwst_dir, filetype)
 
-# Run Magic Stage 2 (sky BG subtractiong) on all targets and filters
-for target_name in target_list:
-    for filter in filter_list:
-        inputdir = os.path.join(jwst_dir, target_name, filter)
-        outputdir_S2 = os.path.join(magic_dir, target_name, filter)
-        if os.path.exists(inputdir):
-            print(f"Processing target {target_name}, filter {filter}")
-            S2_sky.call(inputdir, outputdir_S2, target_name, filter)
+# Run Magic Stage 2 (sky BG subtraction) on all targets and filters
+S2_sky.batch_call(jwst_dir, magic_dir, target_list, filter_list)
 
 # Run Magic Stage 3 (JWST Stage 3 wrapper) on all targets and filters
-for target_name in target_list:
-    for filter in filter_list:
-        outputdir_S3 = os.path.join(magic_dir, target_name, filter)
-        if os.path.exists(outputdir_S3):
-            print(f"Processing target {target_name}, filter {filter}")
-            S3_image.call(outputdir_S3, target_name, filter)
+S3_image.batch_call(magic_dir, target_list, filter_list)
 
 # Run Magic Stage 4 (trends) on all targets and filters
 apcorr_file = '/Users/stevekb1/Documents/Analyses/JWST/WD/aperture_correction_tab3.csv'

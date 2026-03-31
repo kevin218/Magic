@@ -12,6 +12,29 @@ from jwst.associations import asn_from_list
 from magic.plots import show_image, overlay_catalog
 import magic.sort_nicely as sn
 
+
+def batch_call(magic_dir, target_list, filter_list, **kwargs):
+    """Process JWST Stage 3 pipeline for multiple targets and filters.
+
+    Parameters
+    ----------
+    magic_dir : str
+        Root output directory for Magic-processed data containing Stage 2 outputs
+    target_list : list
+        List of target names to process
+    filter_list : list
+        List of filters to process
+    **kwargs : dict
+        Additional keyword arguments passed to call()
+    """
+    for target_name in target_list:
+        for filter in filter_list:
+            outputdir_S3 = os.path.join(magic_dir, target_name, filter)
+            if os.path.exists(outputdir_S3):
+                print(f"Processing target {target_name}, filter {filter}")
+                call(outputdir_S3, target_name, filter, **kwargs)
+
+
 def call(outputdir, target_name, filter,
          filetype='*_skysub_cal.fits', **kwargs):
     """Run JWST Stage 3 pipeline and plot results.
