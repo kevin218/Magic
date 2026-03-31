@@ -29,12 +29,12 @@ filetype = '*_cal.fits'
 # Move and sort downloaded files from MAST dir to JWST dir
 # Comment out this line if reprocessing data that has already been sorted
 files = util.sortMAST(mast_dir, jwst_dir, filetype)
-print(f"Found {len(target_list)} unique targets: {target_list}")
-print(f"Found {len(filter_list)} unique filters: {filter_list}")
 
 # Get unique list of target names and filters
 # Target names include the observation number for unique identification
 target_list, filter_list = util.getTargetInfo(jwst_dir, filetype)
+print(f"Found {len(target_list)} unique targets: {target_list}")
+print(f"Found {len(filter_list)} unique filters: {filter_list}")
 
 # Run Magic Stage 2 (sky BG subtraction) on all targets and filters
 S2_sky.batch_call(jwst_dir, magic_dir, target_list, filter_list)
