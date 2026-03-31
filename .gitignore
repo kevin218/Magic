@@ -5,3 +5,4 @@ src/magic/__pycache__/*
 src/magic.egg-info/*
 STScI_Demos/*
 docs/.DS_Store
+*.pyc
