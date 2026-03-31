@@ -1,13 +1,21 @@
 
-import os
-from magic import S2_sky, S3_image, S4_trends, util
-
 """
+Magic Pipeline
+
+This module orchestrates the MAGIC pipeline for processing JWST MIRI imaging data.
+The pipeline consists of several stages:
+- Stage 2: Sky background subtraction
+- Stage 3: Image combination and mosaicking using JWST Stage 3 pipeline
+- Stage 4: Trend analysis (experimental)
+
 Resources:
 https://github.com/spacetelescope/jwebbinar_prep/blob/webbinar6/pointsource_imaging/MIRI_Aperture_Photometry_solution.ipynb
 https://photutils.readthedocs.io/en/stable/api/photutils.detection.DAOStarFinder.html#photutils.detection.DAOStarFinder
 https://github.com/STScI-MIRI/Imaging_ExampleNB/blob/main/Pipeline_demo_subtract_imager_background.ipynb
 """
+
+import os
+from magic import S2_sky, S3_image, util
 
 # Location of files downloaded from MAST
 mast_dir = '/Users/stevekb1/Documents/data/JWST/WD/MAST'
@@ -34,14 +42,7 @@ S3_image.batch_call(magic_dir, target_list, filter_list)
 
 # Run Magic Stage 4 (trends) on all targets and filters
 # This code is experimental and not necessary for the standard workflow
+# from magic import S4_trends
 # apcorr_file = './aperture_correction_tab3.csv'
 # filters = ['F770W', 'F1800W', 'F2100W']
 # S4_trends.call(magic_dir, filters, target_list, apcorr_file)
-
-
-
-
-
-
-
-

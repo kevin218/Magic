@@ -68,6 +68,15 @@ def getTargetInfo(jwst_dir, filetype='*_cal.fits'):
     ----------
     jwst_dir : str
         Base directory where FITS files are located
+    filetype : str
+        File type pattern to search for. Default is '*_cal.fits'
+
+    Returns
+    -------
+    target_list : list
+        Sorted list of unique target names
+    filter_list : list
+        Sorted list of unique filter names
     """
     # Collect list of files ending in filetype
     files = glob.glob(f'{jwst_dir}/**/{filetype}', recursive=True)

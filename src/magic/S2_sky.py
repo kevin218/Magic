@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import glob, os
 
 # import jwst pipeline modules
-# import jwst
-# from jwst.pipeline import Detector1Pipeline, Image2Pipeline, Image3Pipeline # pipeline modules
 from jwst import datamodels
 from jwst.datamodels import ImageModel, dqflags # Data models and dq values
 
@@ -44,7 +42,7 @@ def batch_call(jwst_dir, magic_dir, target_list, filter_list,
             outputdir_S2 = os.path.join(magic_dir, target_name, filter)
             if os.path.exists(inputdir):
                 print(f"Processing target {target_name}, filter {filter}")
-                call(inputdir, outputdir_S2, target_name, filter, 
+                call(inputdir, outputdir_S2, target_name, filter,
                      filetype=filetype, **kwargs)
 
 
@@ -118,7 +116,7 @@ def make_sky(
     outputdir : str
         Output directory where _skysub_cal files are saved
     subfiles : str
-        Array of files to subtract sky from. If None, sky will be subracted from all input images. [default=None]
+        Array of files to subtract sky from. If None, sky will be subtracted from all input images. [default=None]
     scalebkg : boolean
         Scale each image by its median to the average value [default=True]
     exclude_sigma : float
@@ -167,7 +165,8 @@ def make_sky(
     # adjust the levels to the median
     # allows for data taken at different times with different backgrounds
     ##############################################
-    #medsky = np.nanmean(istackmed)  ########### This is where the combination can be changed between mean or median
+    # This is where the combination can be changed between mean or median
+    # medsky = np.nanmean(istackmed)
     medsky = np.nanmedian(istackmed)
     ##############################################
 
